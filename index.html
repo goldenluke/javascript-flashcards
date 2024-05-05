@@ -111,6 +111,12 @@
         .selected-current-card {
             background-color: #7B1FA2; /* Change to desired color */
         }
+
+        /* Responsive image styles */
+        #answer img {
+            max-width: 100%; /* Ensure image does not exceed container width */
+            height: auto; /* Maintain aspect ratio */
+        }
     </style>
 </head>
 <body>
@@ -120,7 +126,7 @@
                 <p id="question">Press to reveal the question</p>
             </div>
             <div id="card-back">
-                <p id="answer">Press to reveal the answer</p>
+                <p id="answer"><img src=""></p>
                 <div id="flashcard-content"></div> <!-- Content div -->
             </div>
         </div>
