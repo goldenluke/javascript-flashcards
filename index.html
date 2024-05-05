@@ -150,13 +150,38 @@
     <!-- Materialize JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script>
-        const flashcardsMarkdown = [
-            "Fontanela/Fontículo (Anterior e Posterior)::![[Screenshot_20240502_173739.png]]",
-            "Crânio Neural::Maior, superior e posterior -> abriga o encéfalo",
-            "Crânio Visceral (Face/Rosto)::Menor, inferior e anterior -> abriga órgãos do sistema respiratório e digestório",
-            "Sutura Metópica::Variação anatômica -> Sutura Frontal se mantém separada no indivíduo adulto (não se apresenta no crânio desenvolvido) ![[Screenshot_20240502_173739.png]]"
-            // Add more flashcards in the same format
-        ];
+const flashcardsMarkdown = [
+    "Fontanela/Fontículo (Anterior e Posterior)::![[Screenshot_20240502_173739.png]]",
+    "Crânio Neural::Maior, superior e posterior -> abriga o encéfalo",
+    "Crânio Visceral (Face/Rosto)::Menor, inferior e anterior -> abriga órgãos do sistema respiratório e digestório",
+    "Sutura Metópica::Variação anatômica -> Sutura Frontal se mantém separada no indivíduo adulto (não se apresenta no crânio desenvolvido) ![[Screenshot_20240502_173739.png]]",
+    "Fossa Anterior::Situada acima dos olhos, na porção anterior do crânio",
+    "Forame Magno::Localizado na porção inferior do crânio, permite a passagem da medula espinhal",
+    "Processo Zigomático::Osso saliente da face, conhecido como osso da bochecha",
+    "Fossa Temporal::Localizada na lateral do crânio, abaixo da região das têmporas",
+    "Processo Mastoide::Projeção óssea atrás da orelha, relacionada ao osso temporal",
+    "Forame Jugular::Localizado na base do crânio, permite a passagem de estruturas nervosas e vasculares",
+    "Forame Oval::Pequena abertura na base do crânio, permite a passagem de nervos",
+    "Forame Redondo::Abertura localizada na porção lateral do crânio, próximo ao forame oval",
+    "Canal Óptico::Passagem no crânio para o nervo óptico",
+    "Processo Estiloide::Projeção fina e alongada localizada na base do crânio",
+    "Fenda Orbital Superior::Abertura no crânio para os nervos cranianos e vasos sanguíneos",
+    "Fossa Craniana Média::Parte do crânio que abriga o lobo temporal do cérebro",
+    "Linha Nucal Superior::Linha óssea no crânio onde se prendem músculos do pescoço",
+    "Linha Nucal Inferior::Outra linha óssea no crânio onde se prendem músculos do pescoço",
+    "Forame Cego::Pequeno orifício na base do crânio, remanescente do desenvolvimento fetal",
+    "Processo Coronoide::Projeção óssea na mandíbula, relacionada aos músculos da mastigação",
+    "Processo Condilar::Proeminência da mandíbula que se articula com o osso temporal",
+    "Sutura Sagital::Junção entre os ossos parietais do crânio",
+    "Sutura Lambdoide::Junção entre os ossos parietais e occipital do crânio",
+    "Processo Vomer::Osso delgado e triangular no septo nasal",
+    "Forame Lacerado::Localizado no crânio próximo ao forame jugular",
+    "Forame Rasgado Posterior::Abertura na base do crânio para nervos e vasos sanguíneos",
+    "Fenda Orbital Inferior::Abertura na parte inferior do crânio para nervos e vasos sanguíneos",
+    "Canal Carótico::Passagem no crânio para a artéria carótida interna",
+    "Canal Auditivo Interno::Canal no osso temporal para o nervo facial e auditivo"
+    // Add more flashcards in the same format
+];
 
         function convertMarkdownToHTML(markdownText) {
             const regex = /!\[\[(.*?)\]\]/g;
