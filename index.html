@@ -33,8 +33,8 @@
             line-height: 110%;
         }
 
+        /* Custom CSS for small screens (e.g., mobile devices) */
         @media only screen and (max-width: 600px) {
-            /* Custom CSS for small screens (e.g., mobile devices) */
             .brand-logo,
             .brand-logo.center {
                 margin-left: 0; /* Reset margin for small screens */
@@ -42,15 +42,14 @@
                 align-items: center;
             }
 
-
             .title-wrapper img {
                 margin-right: 5px; /* Adjust as needed */
             }
-            .collection-item {
-    white-space: nowrap; /* Prevent text from wrapping */
-    overflow: hidden; /* Hide overflowed text */
-    text-overflow: ellipsis; /* Show ellipsis (...) for truncated text */
-}
+
+            .collection-item a.btn {
+                display: block;
+                width: 100%;
+            }
         }
     </style>
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/goldenluke/javascript-flashcards/main/favicon.png" />
