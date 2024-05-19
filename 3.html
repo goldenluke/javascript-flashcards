@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3. Músculo Liso</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flashcard-container {
+            text-align: center;
+            max-width: 90vw; /* Set maximum width to 90% of viewport width */
+        }
+
+        #flashcard {
+            width: 100%;
+            height: 400px; /* Reduced height for better mobile experience */
+            perspective: 1000px;
+            position: relative;
+            margin-bottom: 20px; /* Add some space between flashcard and buttons */
+        }
+
+        #card-front,
+        #card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backface-visibility: hidden;
+        }
+
+        #card-front {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        #card-back {
+            background-color: #e74c3c;
+            color: #fff;
+            display: none; /* Initially hidden */
+        }
+
+        button {
+            margin-top: 10px; /* Reduced margin for better mobile experience */
+            cursor: pointer;
+        }
+
+        .easy {
+            background-color: green;
+            color: #fff;
+        }
+
+        .medium {
+            background-color: #FF6F00;
+            color: #fff;
+        }
+
+        .hard {
+            background-color: red;
+            color: #fff;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            background-color: #303F9F;
+            border-radius: 5px;
+            transition: color 0.3s ease; /* Add transition effect */
+        }
+
+        li:hover {
+            background-color: #5C6BC0;
+        }
+
+        /* Styles for selected card */
+        .selected {
+            font-weight: bold;
+        }
+
+        /* Set font color of <li> elements to white */
+        #card-selector li {
+            color: white;
+        }
+
+        /* Add lighter class for distant <li> elements */
+        .lighter {
+            color: #ccc; /* Lighter color */
+        }
+
+        /* Style for selected card if it's the current card */
+        .selected-current-card {
+            background-color: #7B1FA2; /* Change to desired color */
+        }
+
+        /* Responsive image styles */
+        #answer img {
+            max-width: 100%; /* Ensure image does not exceed container width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/goldenluke/javascript-flashcards/main/favicon.png" />
+</head>
+<body>
+    <h5>3. Músculo Liso</h5>
+    <div id="flashcard-container">
+        <div id="flashcard" onclick="flipCard()">
+            <div id="card-front">
+                <p id="question">Press to reveal the question</p>
+            </div>
+            <div id="card-back">
+                <p id="answer"><img src=""></p>
+                <div id="flashcard-content"></div> <!-- Content div -->
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="col s4 easy waves-effect waves-light btn" onclick="setDifficulty('easy')">Easy</button>
+            <button class="col s4 medium waves-effect waves-light btn" onclick="setDifficulty('medium')">Medium</button>
+            <button class="col s4 hard waves-effect waves-light btn" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+
+        <div class="row">
+            <button class="col s6 waves-effect waves-light btn" onclick="previousCard()"><< Previous</button>
+            <button class="col s6 waves-effect waves-light btn" onclick="nextCard()">Next >></button>
+        </div>
+
+        <ul id="card-selector" onclick="selectCard(event)">
+            <!-- Dynamically populate options using JavaScript -->
+        </ul>
+    </div>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+const flashcardsMarkdown = [
+    "Quais são os dois tipos principais de músculo liso?::Multiunitário e De Unidade Única (Sincicial ou Visceral)",
+    "O que caracteriza o músculo liso multiunitário?::Cada fibra muscular pode se contrair independentemente das outras, controlada por sinais nervosos",
+    "Dê um exemplo de músculo liso multiunitário.::Fibras musculares lisas do músculo ciliar do olho",
+    "O que caracteriza o músculo liso de Unidade Única?::Uma massa de fibras musculares se contrai como uma única unidade, com membranas celulares unidas por junções comunicantes",
+    "Dê um exemplo de músculo liso de Unidade Única.::Paredes do trato gastrointestinal, útero",
+    "Como é o arranjo estriado do músculo liso?::Diferente dos filamentos de actina e miosina do músculo esquelético, com actina ligada a corpos densos",
+    "Onde estão localizados os corpos densos no músculo liso?::Principalmente na membrana das células musculares lisas e também no citoplasma",
+    "Como são intercalados os filamentos de miosina no músculo liso?::Entre os filamentos de actina",
+    "Do que consistem as unidades contráteis individuais no músculo liso?::Filamentos de actina irradiando de dois corpos densos, sobrepondo-se a um filamento de miosina",
+    "Qual proteína regulatória o músculo liso contém em vez de troponina?::Calmodulina",
+    "Como a calmodulina inicia a contração no músculo liso?::Reage com íons cálcio e ativa as pontes cruzadas de miosina",
+    "Qual é o papel dos íons Ca+2 no mecanismo de contração do músculo liso?::Migram das cavéolas para o sarcoplasma e se combinam com a calmodulina",
+    "O que faz o complexo calmodulina-Ca+2 no músculo liso?::Ativa a enzima cinase da cadeia leve da miosina II",
+    "O que a enzima cinase faz no músculo liso?::Fosforila as moléculas de miosina II, permitindo que se combinem com a actina",
+    "O que acontece quando as moléculas de miosina II se combinam com a actina?::Libera energia do ATP e promove o deslizamento dos filamentos de actina e miosina II",
+    "Como a contração da célula muscular lisa é provocada?::Pela ligação de actina e miosina II a filamentos intermediários que se prendem aos corpos densos",
+    "Qual é o papel da miosina fosfatase no músculo liso?::Remove o fosfato da cadeia leve regulatória, parando o ciclo e terminando a contração",
+    "O que ocorre quando a concentração de íons cálcio cai no músculo liso?::A miosina fosfatase desfosforila a miosina, terminando a contração",
+    "Como a contração do músculo liso difere da do músculo esquelético?::O músculo liso tem uma contração tônica e prolongada, enquanto o músculo esquelético contrai e relaxa rapidamente",
+    "Qual é a diferença na frequência dos ciclos das pontes cruzadas entre músculo liso e esquelético?::A frequência é muito mais baixa no músculo liso",
+    "Quanto de energia é necessário para manter a contração do músculo liso em comparação ao esquelético?::Bem menor no músculo liso",
+    "Como é o início e a duração da contração no músculo liso em comparação ao esquelético?::O músculo liso possui um início lento de contração e uma contração prolongada",
+    "Qual é a força máxima da contração do músculo liso em comparação ao esquelético?::Geralmente maior no músculo liso",
+    "O que é o mecanismo de 'trava' no músculo liso?::Mecanismo que mantém a contração tônica prolongada por horas com o uso de pouca energia",
+    "Quais são os tipos de junções neuromusculares no músculo liso?::Junções difusas e junções de contato",
+    "O que são varicosidades nos axônios no músculo liso?::Terminais dos axônios com vesículas cheias de substâncias neurotransmissoras",
+    "Como as junções neuromusculares do músculo liso diferem das do músculo esquelético?::Não possuem junções neuromusculares altamente estruturadas",
+    "Quais substâncias transmissoras são secretadas pelos nervos autonômicos que inervam o músculo liso?::Acetilcolina e norepinefrina",
+    "O que ocorre quando a acetilcolina excita uma fibra muscular lisa?::A norepinefrina a inibe e vice-versa",
+    "Quais são os dois tipos de potenciais de ação no músculo liso de Unidade Única?::Potencial em espícula e potencial de ação com platôs",
+    "O que são potenciais de onda lenta no músculo liso?::Oscilações lentas no potencial de membrana que podem levar à geração de potenciais de ação",
+    "De onde vêm a maioria dos íons cálcio que causam a contração no músculo liso?::Do fluido extracelular",
+    "Como a força de contração do músculo liso é afetada pela concentração de íons cálcio?::Altamente dependente da concentração de íons cálcio no fluido extracelular",
+    "Como ocorre a remoção de cálcio no músculo liso?::Por meio de bombas de cálcio que movem os íons para fora da fibra muscular lisa"
+];
+
+        function convertMarkdownToHTML(markdownText) {
+            const regex = /!\[\[(.*?)\]\]/g;
+            return markdownText.replace(regex, (match, src) => {
+                return `<img src='${src}'>`;
+            });
+        }
+
+        const flashcards = flashcardsMarkdown.map(entry => {
+            const [question, answer] = entry.split("::").map(convertMarkdownToHTML); // Convert markdown to HTML
+            return { question, answer, image: "", difficulty: "" };
+        });
+
+        let currentCard = 0;
+
+        function flipCard() {
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = front.style.display === "none" ? "flex" : "none";
+            back.style.display = back.style.display === "none" ? "flex" : "none";
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function previousCard() {
+            // Decrement the currentCard index, ensuring it stays within bounds
+            currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function selectCard(event) {
+            if (event.target.tagName === "LI") {
+                const selectedCardIndex = parseInt(event.target.dataset.index, 10);
+
+                // Check if the same card is clicked again
+                if (selectedCardIndex === currentCard) {
+                    return; // Do nothing if the same card is clicked again
+                }
+
+                // Remove previously selected card styling
+                const cardSelector = document.getElementById("card-selector");
+                const previousSelectedCard = cardSelector.querySelector(".selected");
+                if (previousSelectedCard) {
+                    previousSelectedCard.classList.remove("selected");
+                }
+
+                // Apply styling based on difficulty to the selected card
+                const selectedCard = event.target;
+                const difficulty = flashcards[selectedCardIndex].difficulty;
+                selectedCard.classList.add("selected", difficulty);
+
+                // Update current card and display it
+                currentCard = selectedCardIndex;
+                updateCard();
+            }
+        }
+
+        function setDifficulty(difficulty) {
+            const cardSelector = document.getElementById("card-selector");
+            const selectedCard = cardSelector.querySelector(`li[data-index="${currentCard}"]`);
+
+            // Remove previous difficulty classes
+            selectedCard.classList.remove("easy", "medium", "hard");
+
+            // Set the new difficulty class
+            switch (difficulty) {
+                case "easy":
+                    selectedCard.classList.add("easy");
+                    break;
+                case "medium":
+                    selectedCard.classList.add("medium");
+                    break;
+                case "hard":
+                    selectedCard.classList.add("hard");
+                    break;
+                default:
+                    break;
+            }
+
+            // Update the difficulty in the flashcards array
+            flashcards[currentCard].difficulty = difficulty;
+        }
+
+        function updateCard() {
+            const currentFlashcard = flashcards[currentCard];
+            document.getElementById("question").innerHTML = currentFlashcard.question;
+            document.getElementById("answer").innerHTML = currentFlashcard.answer;
+
+            const flashcardContentDiv = document.getElementById("flashcard-content");
+            flashcardContentDiv.innerHTML = currentFlashcard.image;
+
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = "flex";
+            back.style.display = "none";
+        }
+
+        function populateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+
+            flashcards.forEach((flashcard, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `Card ${index + 1}: ${flashcard.question}`;
+                listItem.dataset.index = index;
+                cardSelector.appendChild(listItem);
+            });
+        }
+
+        function updateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+            const cardItems = cardSelector.querySelectorAll("li");
+
+            cardItems.forEach((item, index) => {
+                const distance = Math.abs(currentCard - index); // Calculate distance from current card
+                if (distance > 1) {
+                    item.classList.add("lighter"); // Add lighter class if not adjacent to current card
+                } else {
+                    item.classList.remove("lighter"); // Remove lighter class if adjacent to current card
+                }
+
+                // Add selected-current-card class if it's the current card
+                if (index === currentCard) {
+                    item.classList.add("selected-current-card");
+                } else {
+                    item.classList.remove("selected-current-card");
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCard();
+            populateCardSelector();
+            updateCardSelector(); // Call to update card selector initially
+        });
+    </script>
+</body>
+</html>
+

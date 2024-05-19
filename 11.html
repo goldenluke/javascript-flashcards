@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>11. Rins e o Controle a Longo Prazo da Pressão Arterial</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flashcard-container {
+            text-align: center;
+            max-width: 90vw; /* Set maximum width to 90% of viewport width */
+        }
+
+        #flashcard {
+            width: 100%;
+            height: 400px; /* Reduced height for better mobile experience */
+            perspective: 1000px;
+            position: relative;
+            margin-bottom: 20px; /* Add some space between flashcard and buttons */
+        }
+
+        #card-front,
+        #card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backface-visibility: hidden;
+        }
+
+        #card-front {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        #card-back {
+            background-color: #e74c3c;
+            color: #fff;
+            display: none; /* Initially hidden */
+        }
+
+        button {
+            margin-top: 10px; /* Reduced margin for better mobile experience */
+            cursor: pointer;
+        }
+
+        .easy {
+            background-color: green;
+            color: #fff;
+        }
+
+        .medium {
+            background-color: #FF6F00;
+            color: #fff;
+        }
+
+        .hard {
+            background-color: red;
+            color: #fff;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            background-color: #303F9F;
+            border-radius: 5px;
+            transition: color 0.3s ease; /* Add transition effect */
+        }
+
+        li:hover {
+            background-color: #5C6BC0;
+        }
+
+        /* Styles for selected card */
+        .selected {
+            font-weight: bold;
+        }
+
+        /* Set font color of <li> elements to white */
+        #card-selector li {
+            color: white;
+        }
+
+        /* Add lighter class for distant <li> elements */
+        .lighter {
+            color: #ccc; /* Lighter color */
+        }
+
+        /* Style for selected card if it's the current card */
+        .selected-current-card {
+            background-color: #7B1FA2; /* Change to desired color */
+        }
+
+        /* Responsive image styles */
+        #answer img {
+            max-width: 100%; /* Ensure image does not exceed container width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/goldenluke/javascript-flashcards/main/favicon.png" />
+</head>
+<body>
+    <h5>11. Rins e o Controle a Longo Prazo da Pressão Arterial</h5>
+    <div id="flashcard-container">
+        <div id="flashcard" onclick="flipCard()">
+            <div id="card-front">
+                <p id="question">Press to reveal the question</p>
+            </div>
+            <div id="card-back">
+                <p id="answer"><img src=""></p>
+                <div id="flashcard-content"></div> <!-- Content div -->
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="col s4 easy waves-effect waves-light btn" onclick="setDifficulty('easy')">Easy</button>
+            <button class="col s4 medium waves-effect waves-light btn" onclick="setDifficulty('medium')">Medium</button>
+            <button class="col s4 hard waves-effect waves-light btn" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+
+        <div class="row">
+            <button class="col s6 waves-effect waves-light btn" onclick="previousCard()"><< Previous</button>
+            <button class="col s6 waves-effect waves-light btn" onclick="nextCard()">Next >></button>
+        </div>
+
+        <ul id="card-selector" onclick="selectCard(event)">
+            <!-- Dynamically populate options using JavaScript -->
+        </ul>
+    </div>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+const flashcardsMarkdown = [
+    "Qual é o papel dos rins no controle a longo prazo da pressão arterial?::Os rins ajudam a regular a pressão arterial ao longo de dias, semanas e meses através do feedback renal e de fluidos corporais.",
+    "Quais são os mecanismos intermediários de controle da pressão sanguínea após vários minutos de uma alteração aguda?::Os mecanismos intermediários incluem o mecanismo vasoconstritor renina-angiotensina, o relaxamento da vasculatura por estresse e o deslocamento de líquidos através das paredes capilares.",
+    "Como o mecanismo vasoconstritor renina-angiotensina contribui para o controle intermediário da pressão sanguínea?::A renina-angiotensina é liberada pelos rins em resposta à diminuição da pressão arterial, desencadeando vasoconstrição e aumento da resistência periférica.",
+    "Explique como o relaxamento da vasculatura por estresse ajuda a regular a pressão arterial.::Quando os vasos sanguíneos são submetidos a uma pressão elevada, eles se distendem inicialmente, levando eventualmente a uma diminuição da pressão dentro dos vasos e ajudando a normalizar a pressão arterial.",
+    "Descreva como o deslocamento de líquidos através das paredes capilares afeta a pressão arterial.::Se a pressão nos capilares aumenta, líquidos podem ser perdidos para fora da circulação, reduzindo a pressão arterial. Se a pressão capilar diminui, líquidos podem ser reabsorvidos, aumentando a pressão arterial.",
+    "Quanto tempo leva para o mecanismo de feedback renal e de fluidos corporais produzir uma resposta significativa no controle da pressão arterial?::Esse mecanismo demora várias horas para produzir uma resposta significativa.",
+    "Por quanto tempo o feedback renal e de fluidos corporais atua no controle da pressão arterial?::Esse mecanismo regula a pressão arterial ao longo de dias, semanas e meses.",
+    "Como os distúrbios que afetam a pressão arterial têm efeito sobre o controle da pressão sanguínea a longo prazo?::Quando a função renal está adequada, esses distúrbios têm efeitos mínimos a longo prazo, pois o sistema renal ajusta o débito de sal e água para manter a pressão arterial normal.",
+    "O que é o sistema renina-angiotensina e qual é o seu papel no controle da pressão arterial?::O sistema renina-angiotensina é ativado pelos rins em resposta à baixa pressão arterial e promove vasoconstrição, aumentando a resistência periférica e elevando a pressão arterial.",
+    "Quais são os efeitos da angiotensina II na regulação da pressão arterial?::A angiotensina II atua como um potente vasoconstritor, aumentando a resistência periférica e elevando a pressão arterial. Além disso, promove a retenção renal de sal e água.",
+    "Explique como a constrição das artérias renais pode causar hipertensão.::A constrição das artérias renais reduz a filtração glomerular, levando à retenção de sal e água, aumento do volume sanguíneo e elevação da pressão arterial.",
+    "Qual é o efeito do aumento da resistência periférica total na pressão arterial?::O aumento da resistência periférica total leva a uma elevação da pressão arterial.",
+    "Como a ingestão excessiva de sal afeta a pressão arterial?::A ingestão excessiva de sal pode levar a um aumento do volume de líquido extracelular e da pressão arterial.",
+    "Como a constrição das arteríolas afeta a pressão arterial?::A constrição das arteríolas aumenta a resistência periférica total e diminui a capacidade vascular, contribuindo para o aumento da pressão arterial.",
+    "Explique como a isquemia renal pode causar hipertensão.::A isquemia renal reduz a capacidade dos rins de excretar sal e água, levando à retenção de líquidos, aumento do volume sanguíneo e elevação da pressão arterial.",
+    "O que é toxemia gravídica (pré-eclâmpsia) e como ela está associada à hipertensão?::A toxemia gravídica é uma condição associada à gravidez, caracterizada por isquemia placentária e liberação de toxinas, que podem causar hipertensão.",
+    "Qual é a principal causa da hipertensão primária (essencial)?::A causa exata da hipertensão primária em cerca de 90% dos casos é desconhecida, mas muitos pacientes apresentam alterações na função renal.",
+    "Como o sistema renina-angiotensina permite ao indivíduo ingerir sal tanto em alta quantidade quanto em baixa demais sem produzir alterações significativas na pressão arterial?::O sistema renina-angiotensina regula a pressão arterial permitindo que o indivíduo ajuste o débito de sal e água através dos rins, mesmo com variações na ingestão de sal.",
+    "Quais são os efeitos da angiotensina II sobre a pressão arterial?::A angiotensina II atua como um vasoconstritor potente e promove a retenção renal de sal e água, elevando assim a pressão arterial.",
+    "Explique como o comprometimento da circulação renal pode causar hipertensão.::Condições que reduzem a capacidade dos rins de excretar sal e água, como a estenose das artérias renais, podem levar à retenção de líquidos, aumento do volume sanguíneo e elevação da pressão arterial.",
+    "Qual é o papel do sistema renina-angiotensina no controle agudo da pressão sanguínea?::O sistema renina-angiotensina atua como um mecanismo de resposta rápida à diminuição da pressão arterial, promovendo vasoconstrição e elevando a pressão arterial.",
+    "Como a redução da pressão arterial estimula a secreção de renina pelos rins?::Uma diminuição na pressão arterial estimula as células justaglomerulares do rim a secretar renina no sangue.",
+    "O que é angiotensina II e qual é o seu efeito na pressão arterial?::A angiotensina II é um componente ativo do sistema renina-angiotensina e atua como um potente vasoconstritor, aumentando a resistência periférica total e elevando a pressão arterial.", "Como a angiotensina II promove a retenção renal de sal e água?::A angiotensina II estimula diretamente as células epiteliais dos túbulos renais para aumentar a reabsorção de sódio e água, além de estimular as glândulas adrenais a secretarem aldosterona, que também aumenta a reabsorção de sal e água pelos túbulos renais.", "Como a formação excessiva de angiotensina II pode levar à hipertensão?::O excesso de angiotensina II causa vasoconstrição, aumentando a resistência periférica total, e promove a retenção renal de sal e água, elevando a pressão arterial a curto e longo prazo.", "O que é hipertensão de Goldblatt de um rim?::É uma forma de hipertensão induzida experimentalmente pela constrição da artéria renal de um rim, levando à ativação do mecanismo vasoconstritor da renina-angiotensina.", "Como a coarctação da aorta acima das artérias renais causa hipertensão?::A coarctação da aorta reduz a pressão de perfusão para os rins, estimulando a liberação de renina e a formação de angiotensina II, que promovem a retenção de sal e água pelos rins, elevando a pressão arterial na parte superior do corpo.", "O que é hipertensão de Goldblatt de dois rins?::É uma forma de hipertensão induzida experimentalmente pela constrição da artéria de um rim, levando à retenção de sal e água em ambos os rins e à elevação da pressão arterial.", "Como a isquemia desigual em um ou em ambos os rins pode causar hipertensão?::A isquemia desigual leva à secreção de renina pelo tecido renal funcionante, promovendo a retenção de sal e água e elevando a pressão arterial.", "Quais são as características da hipertensão primária (essencial) humana?::A hipertensão primária é uma condição comum em que a causa exata não é conhecida, mas pode envolver alterações na função renal que levam à retenção de sal e água.", "Como o sistema renina-angiotensina permite que o indivíduo consuma diferentes quantidades de sal sem grandes alterações na pressão arterial?::O sistema renina-angiotensina regula a pressão arterial permitindo que o débito de sal e água seja ajustado pelos rins, mesmo com variações na ingestão de sal."
+];
+
+
+
+
+        function convertMarkdownToHTML(markdownText) {
+            const regex = /!\[\[(.*?)\]\]/g;
+            return markdownText.replace(regex, (match, src) => {
+                return `<img src='${src}'>`;
+            });
+        }
+
+        const flashcards = flashcardsMarkdown.map(entry => {
+            const [question, answer] = entry.split("::").map(convertMarkdownToHTML); // Convert markdown to HTML
+            return { question, answer, image: "", difficulty: "" };
+        });
+
+        let currentCard = 0;
+
+        function flipCard() {
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = front.style.display === "none" ? "flex" : "none";
+            back.style.display = back.style.display === "none" ? "flex" : "none";
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function previousCard() {
+            // Decrement the currentCard index, ensuring it stays within bounds
+            currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function selectCard(event) {
+            if (event.target.tagName === "LI") {
+                const selectedCardIndex = parseInt(event.target.dataset.index, 10);
+
+                // Check if the same card is clicked again
+                if (selectedCardIndex === currentCard) {
+                    return; // Do nothing if the same card is clicked again
+                }
+
+                // Remove previously selected card styling
+                const cardSelector = document.getElementById("card-selector");
+                const previousSelectedCard = cardSelector.querySelector(".selected");
+                if (previousSelectedCard) {
+                    previousSelectedCard.classList.remove("selected");
+                }
+
+                // Apply styling based on difficulty to the selected card
+                const selectedCard = event.target;
+                const difficulty = flashcards[selectedCardIndex].difficulty;
+                selectedCard.classList.add("selected", difficulty);
+
+                // Update current card and display it
+                currentCard = selectedCardIndex;
+                updateCard();
+            }
+        }
+
+        function setDifficulty(difficulty) {
+            const cardSelector = document.getElementById("card-selector");
+            const selectedCard = cardSelector.querySelector(`li[data-index="${currentCard}"]`);
+
+            // Remove previous difficulty classes
+            selectedCard.classList.remove("easy", "medium", "hard");
+
+            // Set the new difficulty class
+            switch (difficulty) {
+                case "easy":
+                    selectedCard.classList.add("easy");
+                    break;
+                case "medium":
+                    selectedCard.classList.add("medium");
+                    break;
+                case "hard":
+                    selectedCard.classList.add("hard");
+                    break;
+                default:
+                    break;
+            }
+
+            // Update the difficulty in the flashcards array
+            flashcards[currentCard].difficulty = difficulty;
+        }
+
+        function updateCard() {
+            const currentFlashcard = flashcards[currentCard];
+            document.getElementById("question").innerHTML = currentFlashcard.question;
+            document.getElementById("answer").innerHTML = currentFlashcard.answer;
+
+            const flashcardContentDiv = document.getElementById("flashcard-content");
+            flashcardContentDiv.innerHTML = currentFlashcard.image;
+
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = "flex";
+            back.style.display = "none";
+        }
+
+        function populateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+
+            flashcards.forEach((flashcard, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `Card ${index + 1}: ${flashcard.question}`;
+                listItem.dataset.index = index;
+                cardSelector.appendChild(listItem);
+            });
+        }
+
+        function updateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+            const cardItems = cardSelector.querySelectorAll("li");
+
+            cardItems.forEach((item, index) => {
+                const distance = Math.abs(currentCard - index); // Calculate distance from current card
+                if (distance > 1) {
+                    item.classList.add("lighter"); // Add lighter class if not adjacent to current card
+                } else {
+                    item.classList.remove("lighter"); // Remove lighter class if adjacent to current card
+                }
+
+                // Add selected-current-card class if it's the current card
+                if (index === currentCard) {
+                    item.classList.add("selected-current-card");
+                } else {
+                    item.classList.remove("selected-current-card");
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCard();
+            populateCardSelector();
+            updateCardSelector(); // Call to update card selector initially
+        });
+    </script>
+</body>
+</html>
+
