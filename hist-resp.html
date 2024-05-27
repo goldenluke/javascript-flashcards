@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histologia do Sistema Respiratório</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            font-family: Roboto, sans-serif;
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #flashcard-container {
+            text-align: center;
+            max-width: 90vw; /* Set maximum width to 90% of viewport width */
+        }
+
+        #flashcard {
+            width: 100%;
+            height: 400px; /* Reduced height for better mobile experience */
+            perspective: 1000px;
+            position: relative;
+            margin-bottom: 20px; /* Add some space between flashcard and buttons */
+        }
+
+        #card-front,
+        #card-back {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backface-visibility: hidden;
+        }
+
+        #card-front {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        #card-back {
+            background-color: #e74c3c;
+            color: #fff;
+            display: none; /* Initially hidden */
+        }
+
+        button {
+            margin-top: 10px; /* Reduced margin for better mobile experience */
+            cursor: pointer;
+        }
+
+        .easy {
+            background-color: green;
+            color: #fff;
+        }
+
+        .medium {
+            background-color: #FF6F00;
+            color: #fff;
+        }
+
+        .hard {
+            background-color: red;
+            color: #fff;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            cursor: pointer;
+            padding: 5px;
+            margin: 5px;
+            background-color: #303F9F;
+            border-radius: 5px;
+            transition: color 0.3s ease; /* Add transition effect */
+        }
+
+        li:hover {
+            background-color: #5C6BC0;
+        }
+
+        /* Styles for selected card */
+        .selected {
+            font-weight: bold;
+        }
+
+        /* Set font color of <li> elements to white */
+        #card-selector li {
+            color: white;
+        }
+
+        /* Add lighter class for distant <li> elements */
+        .lighter {
+            color: #ccc; /* Lighter color */
+        }
+
+        /* Style for selected card if it's the current card */
+        .selected-current-card {
+            background-color: #7B1FA2; /* Change to desired color */
+        }
+
+        /* Responsive image styles */
+        #answer img {
+            max-width: 100%; /* Ensure image does not exceed container width */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/goldenluke/javascript-flashcards/main/favicon.png" />
+</head>
+<body>
+    <h5>Histologia do Sistema Respiratório</h5>
+    <div id="flashcard-container">
+        <div id="flashcard" onclick="flipCard()">
+            <div id="card-front">
+                <p id="question">Press to reveal the question</p>
+            </div>
+            <div id="card-back">
+                <p id="answer"><img src=""></p>
+                <div id="flashcard-content"></div> <!-- Content div -->
+            </div>
+        </div>
+
+        <div class="row">
+            <button class="col s4 easy waves-effect waves-light btn" onclick="setDifficulty('easy')">Easy</button>
+            <button class="col s4 medium waves-effect waves-light btn" onclick="setDifficulty('medium')">Medium</button>
+            <button class="col s4 hard waves-effect waves-light btn" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+
+        <div class="row">
+            <button class="col s6 waves-effect waves-light btn" onclick="previousCard()"><< Previous</button>
+            <button class="col s6 waves-effect waves-light btn" onclick="nextCard()">Next >></button>
+        </div>
+
+        <ul id="card-selector" onclick="selectCard(event)">
+            <!-- Dynamically populate options using JavaScript -->
+        </ul>
+    </div>
+
+    <!-- Materialize JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+const flashcardsMarkdown = [
+"O que compõe a porção condutora?::Cavidade nasal, boca, faringe, laringe, traquéia, brônquios, bronquíolos e bronquíolos terminais",
+"Funções da porção condutora::Filtrar e umedificar o ar",
+"O que compõe a porção respiratória?::Bronquíolos respiratórios, ductos alveolares, sacos alveolares, alvéolos",
+"Epitélio respiratório está presente em::Cavidade nasal, boca, faringe, laringe, traquéia, brônquios, bronquíolos e bronquíolos terminais",
+"Tipo de epitélio na porção condutora::Epitélio de revestimento colunar pseudo-estratificado ciliado",
+"Função das células caliciformes::Produzir mucinógeno (quando hidratado, torna-se mucina, que filtra o ar)",
+"Característica das células caliciformes::Não possuem cílios no ápice",
+"Função das células colunares ciliadas::Movimentar o muco em direção à boca para deglutição",
+"Característica das células colunares ciliadas::Possuem cílios e microvilosidades na superfície",
+"Localização das células basais::Na membrana basal, não alcançam a luz",
+"Função das células basais::São células-tronco que podem se diferenciar em outros tipos celulares do epitélio respiratório",
+"Característica das células em escova::Células colunares estreitas com microvilosidades altas",
+"Função das células DNES (Sistema Neuroendócrino Difuso)::Liberar grânulos no espaço conjuntivo da lâmina própria e controlar funções das outras células do epitélio respiratório",
+"Localização do epitélio olfatório::Na cavidade nasal",
+"Função das células olfatórias::Detecção de odores",
+"Tipo de células olfatórias::Neurônios bipolares",
+"Região apical das células olfatórias::Vesículas olfativas e cílios olfativos",
+"Região basal das células olfatórias::Axônios amielínicos que penetram na lâmina basal e se unem a outros axônios, formando feixes de fibras nervosas que cruzam a placa cribiforme e estabelecem sinapses no bulbo olfatório",
+"Função das células de sustentação::Sustentação física, nutrição e isolamento para as células olfatórias",
+"Características das células de sustentação::Colunares, com microvilosidades apicais e citoplasma com grânulos de secreção e pigmento amarelo",
+"Função das células basais no epitélio olfatório::Células-tronco que podem substituir tanto as células de sustentação quanto as células olfatórias",
+"Características das células basais no epitélio olfatório::Células baixas e piramidais, cuja porção apical não alcança a superfície epitelial",
+"Epitélio da nasofaringe::Epitélio respiratório",
+"Epitélio da orofaringe::Epitélio pavimentoso estratificado",
+"Epitélio da laringofaringe::Epitélio pavimentoso estratificado",
+"Localização da laringe::Entre a faringe e a traqueia",
+"Cartilagens presentes na laringe::Hialina tireoide e cricoide, e elástica epiglote",
+"Revestimento da laringe::Epitélio respiratório, exceto na superfície superior da epiglote e nas cordas vocais, onde é epitélio pavimentoso estratificado não queratinizado",
+"Início da traqueia::Cartilagem cricoide da laringe",
+"Término da traqueia::Bifurcação para formar os brônquios primários",
+"Composição da parede da traqueia::Anéis de cartilagem hialina em forma de ferradura, músculo liso nas extremidades, camada mucosa, submucosa e adventícia",
+"Composição da camada mucosa da traqueia::Epitélio respiratório, lâmina basal e lâmina própria com fibras elásticas",
+"Composição da camada submucosa da traqueia::Tecido conjuntivo denso não modelado, com porção secretora de várias glândulas",
+"Composição da camada adventícia da traqueia::Anéis de cartilagem, tecido conjuntivo fibroso interposto",
+"Componentes da árvore brônquica::Todos os brônquios (primário, secundário, etc) e bronquíolos (até os bronquíolos respiratórios)",
+"Características dos brônquios primários::Idênticos à traqueia, sem músculos, mas com diâmetro menor e parede mais grossa",
+"Local de perfuração dos brônquios primários::Raiz do pulmão, junto com artérias, veias e vasos linfáticos",
+"Composição dos brônquios secundários::Músculo liso entre mucosa e submucosa, placas irregulares de cartilagem, músculo liso na interface da lâmina própria com a submucosa, glândulas seromucosas e elementos linfoides",
+"Local de surgimento dos bronquíolos::Após 10 a 15 ramificações dos brônquios, por dicotomia da árvore brônquica",
+"Composição dos bronquíolos::Não possuem cartilagem na parede, revestimento que muda de colunar ciliado pseudoestratificado para colunar simples ciliado e cubóide simples ciliado, lâmina própria sem glândulas envolvida por músculo liso",
+"Características dos bronquíolos terminais::Porção final da porção condutora, com epitélio cubóide, algumas células ciliadas e células de Clara, tecido conjuntivo fibroelástico, e 1 ou 2 camadas de células musculares",
+"Composição dos bronquíolos respiratórios::Semelhante aos bronquíolos terminais, interrompidos por alvéolos onde ocorrem as trocas gasosas",
+"Composição dos ductos alveolares e sacos alveolares::Arranjos lineares de alvéolos, ducto alveolar desemboca no saco alveolar",
+"Estrutura dos alvéolos::Unidade morfofuncional do pulmão, separados uns dos outros por septos interalveolares, comunicação entre si através de poros alveolares",
+"Lóbulos pulmonares::Cada bronquíolo terminal supre um lóbulo, cada bronquíolo respiratório, derivado do bronquíolo terminal, compõe um ácino pulmonar",
+"Ácinos pulmonares::Tudo que vem após um bronquíolo terminal forma um lóbulo pulmonar, cada bronquíolo respiratório compõe um ácino pulmonar",
+"Tecido conjuntivo do septo interalveolar::Extensos leitos capilares com fibras elásticas e de colágeno tipo III",
+"Funções das células das paredes dos alvéolos::Troca gasosa (Pneumócito do Tipo I), produção de surfactante pulmonar (Pneumócito do Tipo II), defesa imunológica alveolar (macrófagos",
+"Onde ocorre a hematopoese?::No tecido conjuntivo do septo interalveolar, rico em capilares e fibras elásticas, enquanto as células epiteliais dos alvéolos desempenham funções vitais na troca gasosa e na defesa imunológica, incluindo pneumócitos do tipo I, pneumócitos do tipo II e macrófagos"
+];
+        function convertMarkdownToHTML(markdownText) {
+            const regex = /!\[\[(.*?)\]\]/g;
+            return markdownText.replace(regex, (match, src) => {
+                return `<img src='${src}'>`;
+            });
+        }
+
+        const flashcards = flashcardsMarkdown.map(entry => {
+            const [question, answer] = entry.split("::").map(convertMarkdownToHTML); // Convert markdown to HTML
+            return { question, answer, image: "", difficulty: "" };
+        });
+
+        let currentCard = 0;
+
+        function flipCard() {
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = front.style.display === "none" ? "flex" : "none";
+            back.style.display = back.style.display === "none" ? "flex" : "none";
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function previousCard() {
+            // Decrement the currentCard index, ensuring it stays within bounds
+            currentCard = (currentCard - 1 + flashcards.length) % flashcards.length;
+            updateCard();
+            updateCardSelector(); // Update card selector styles
+        }
+
+        function selectCard(event) {
+            if (event.target.tagName === "LI") {
+                const selectedCardIndex = parseInt(event.target.dataset.index, 10);
+
+                // Check if the same card is clicked again
+                if (selectedCardIndex === currentCard) {
+                    return; // Do nothing if the same card is clicked again
+                }
+
+                // Remove previously selected card styling
+                const cardSelector = document.getElementById("card-selector");
+                const previousSelectedCard = cardSelector.querySelector(".selected");
+                if (previousSelectedCard) {
+                    previousSelectedCard.classList.remove("selected");
+                }
+
+                // Apply styling based on difficulty to the selected card
+                const selectedCard = event.target;
+                const difficulty = flashcards[selectedCardIndex].difficulty;
+                selectedCard.classList.add("selected", difficulty);
+
+                // Update current card and display it
+                currentCard = selectedCardIndex;
+                updateCard();
+            }
+        }
+
+        function setDifficulty(difficulty) {
+            const cardSelector = document.getElementById("card-selector");
+            const selectedCard = cardSelector.querySelector(`li[data-index="${currentCard}"]`);
+
+            // Remove previous difficulty classes
+            selectedCard.classList.remove("easy", "medium", "hard");
+
+            // Set the new difficulty class
+            switch (difficulty) {
+                case "easy":
+                    selectedCard.classList.add("easy");
+                    break;
+                case "medium":
+                    selectedCard.classList.add("medium");
+                    break;
+                case "hard":
+                    selectedCard.classList.add("hard");
+                    break;
+                default:
+                    break;
+            }
+
+            // Update the difficulty in the flashcards array
+            flashcards[currentCard].difficulty = difficulty;
+        }
+
+        function updateCard() {
+            const currentFlashcard = flashcards[currentCard];
+            document.getElementById("question").innerHTML = currentFlashcard.question;
+            document.getElementById("answer").innerHTML = currentFlashcard.answer;
+
+            const flashcardContentDiv = document.getElementById("flashcard-content");
+            flashcardContentDiv.innerHTML = currentFlashcard.image;
+
+            const front = document.getElementById("card-front");
+            const back = document.getElementById("card-back");
+
+            front.style.display = "flex";
+            back.style.display = "none";
+        }
+
+        function populateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+
+            flashcards.forEach((flashcard, index) => {
+                const listItem = document.createElement("li");
+                listItem.textContent = `Card ${index + 1}: ${flashcard.question}`;
+                listItem.dataset.index = index;
+                cardSelector.appendChild(listItem);
+            });
+        }
+
+        function updateCardSelector() {
+            const cardSelector = document.getElementById("card-selector");
+            const cardItems = cardSelector.querySelectorAll("li");
+
+            cardItems.forEach((item, index) => {
+                const distance = Math.abs(currentCard - index); // Calculate distance from current card
+                if (distance > 1) {
+                    item.classList.add("lighter"); // Add lighter class if not adjacent to current card
+                } else {
+                    item.classList.remove("lighter"); // Remove lighter class if adjacent to current card
+                }
+
+                // Add selected-current-card class if it's the current card
+                if (index === currentCard) {
+                    item.classList.add("selected-current-card");
+                } else {
+                    item.classList.remove("selected-current-card");
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateCard();
+            populateCardSelector();
+            updateCardSelector(); // Call to update card selector initially
+        });
+    </script>
+</body>
+</html>
+
